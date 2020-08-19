@@ -18,11 +18,13 @@
     "build_web_dist_prod": "webpack ./build/src/index.js -o ./dist/production/web.js --mode production --env prod --target web",
     "deploy:src": "tsc && npm run build_node_dist_dev && npm run build_node_dist_prod && npm run build_web_dist_dev && npm run build_web_dist_prod",
     "deploy:docs": "typedoc --options typedoc.json",
-    "test": "mocha build/test/**/*.js",
-    "check": "prettier --check .",
+    "test": "mocha --recursive build/test/",
+    "check": "npm run check:src && npm run check:test",
+    "check:src": "prettier --check \"./src/**/*.ts\"",
+    "check:test": "prettier --check \"./test/**/*.ts\"",
     "fix": "prettier --write .",
-    "prepare": "npm run compile",
-    "pretest": "tsc"
+    "pretest": "tsc",
+    "posttest": "npm run check"
   },
   "husky": {
     "hooks": {
