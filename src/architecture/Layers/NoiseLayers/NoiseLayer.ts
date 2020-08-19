@@ -1,6 +1,6 @@
-import {ActivationType, Identitiy} from 'activations';
-import {ConnectionType, NoiseNode, NoiseNodeType} from '../../..';
-import {Layer} from '../Layer';
+import { ActivationType, Identitiy } from "activations";
+import { ConnectionType, NoiseNode, NoiseNodeType } from "../../..";
+import { Layer } from "../Layer";
 
 /**
  * Noise layer

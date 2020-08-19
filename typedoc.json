@@ -1,11 +1,6 @@
 {
-  "inputFiles": [
-    "./src"
-  ],
-  "exclude": [
-    "./test",
-    "./scripts"
-  ],
+  "inputFiles": ["./src"],
+  "exclude": ["./test", "./scripts"],
   "out": "docs/",
   "mode": "file",
   "tsconfig": "./tsconfig.json",

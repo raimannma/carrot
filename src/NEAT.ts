@@ -1,14 +1,14 @@
-import * as TimSort from 'timsort';
-import {Network} from './architecture/Network';
-import {Species} from './architecture/Species';
-import {EvolveOptions} from './interfaces/EvolveOptions';
+import * as TimSort from "timsort";
+import { Network } from "./architecture/Network";
+import { Species } from "./architecture/Species";
+import { EvolveOptions } from "./interfaces/EvolveOptions";
 import {
   AddConnectionMutation,
   AddGateMutation,
   AddNodeMutation,
   Mutation,
-} from './methods/Mutation';
-import {pickRandom} from './utils/Utils';
+} from "./methods/Mutation";
+import { pickRandom } from "./utils/Utils";
 
 /**
  * Runs the NEAT algorithm on group of neural networks.
@@ -33,7 +33,7 @@ export class NEAT {
    */
   constructor(options: EvolveOptions) {
     if (!options.fitnessFunction) {
-      throw new ReferenceError('No fitness function given!');
+      throw new ReferenceError("No fitness function given!");
     }
     this._options = options;
     this.population = [];
@@ -69,7 +69,7 @@ export class NEAT {
    * @param network The network which will be mutated.
    */
   public mutateRandom(network: Network): void {
-    const allowed: Mutation[] = this.options.mutations.filter(method => {
+    const allowed: Mutation[] = this.options.mutations.filter((method) => {
       return (
         method.constructor.name !== AddNodeMutation.constructor.name ||
         network.nodes.length < this.options.maxNodes ||
@@ -94,7 +94,7 @@ export class NEAT {
 
     await this.evaluate();
     this.sort();
-    this.species.forEach(species => species.evaluateScore());
+    this.species.forEach((species) => species.evaluateScore());
 
     this.kill(1 - this.options.survivors);
     this.removeExtinctSpecies();
@@ -123,13 +123,13 @@ export class NEAT {
       this.options.log > 0 &&
       this.options.generation % this.options.log === 0
     ) {
-      console.log('\n---------------------------');
+      console.log("\n---------------------------");
       console.log(
-        'Generation: ' +
+        "Generation: " +
           this.options.generation +
-          '; Species: ' +
+          "; Species: " +
           this.species.size +
-          '; Score: ' +
+          "; Score: " +
           this.population[0].score
       );
       for (const species of this.species) {
@@ -138,7 +138,7 @@ export class NEAT {
     }
 
     // Reset the scores
-    this.population.forEach(genome => (genome.score = undefined));
+    this.population.forEach((genome) => (genome.score = undefined));
 
     this.options.generation++;
 
@@ -154,7 +154,7 @@ export class NEAT {
     // Elitist genomes should not be included
     this.population
       .filter(() => Math.random() <= this.options.mutationRate)
-      .forEach(genome => {
+      .forEach((genome) => {
         for (let i = 0; i < this.options.mutationAmount; i++) {
           if (method) {
             genome.mutate(method);
@@ -172,7 +172,7 @@ export class NEAT {
    */
   public async evaluate(): Promise<Network> {
     if (this.options.clear) {
-      this.population.forEach(genome => genome.clear());
+      this.population.forEach((genome) => genome.clear());
     }
     await this.options.fitnessFunction?.(this.population, this.options.dataset);
 
@@ -219,8 +219,8 @@ export class NEAT {
     }
     let score = 0;
     this.population
-      .map(genome => genome.score)
-      .forEach(val => (score += val ?? 0));
+      .map((genome) => genome.score)
+      .forEach((val) => (score += val ?? 0));
     return score / this.population.length;
   }
 
@@ -263,7 +263,7 @@ export class NEAT {
         species.size() <= 1 ||
         species.stagnation > this.options.maxStagnation
       ) {
-        species.members.forEach(member => (member.species = null));
+        species.members.forEach((member) => (member.species = null));
         this.species.delete(species);
       }
     }
@@ -275,7 +275,7 @@ export class NEAT {
    * @private
    */
   private kill(killRate: number): void {
-    this.species.forEach(species => species.kill(killRate));
+    this.species.forEach((species) => species.kill(killRate));
   }
 
   /**
@@ -283,10 +283,10 @@ export class NEAT {
    * @private
    */
   private genSpecies(): void {
-    this.species.forEach(species => species.reset());
+    this.species.forEach((species) => species.reset());
     this.population
-      .filter(genome => genome.species === null)
-      .forEach(genome => {
+      .filter((genome) => genome.species === null)
+      .forEach((genome) => {
         let found = false;
         for (const species of Array.from(this.species)) {
           if (

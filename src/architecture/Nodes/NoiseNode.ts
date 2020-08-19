@@ -1,5 +1,5 @@
-import {avg, generateGaussian, NoiseNodeType, sum} from '../..';
-import {ConstantNode} from './ConstantNode';
+import { avg, generateGaussian, NoiseNodeType, sum } from "../..";
+import { ConstantNode } from "./ConstantNode";
 
 /**
  * Noise node
@@ -67,7 +67,7 @@ export class NoiseNode extends ConstantNode {
     this.prevState = this.state;
 
     const incomingStates: number[] = Array.from(this.incoming).map(
-      conn => conn.from.activation * conn.weight * conn.gain
+      (conn) => conn.from.activation * conn.weight * conn.gain
     );
 
     switch (this.noiseType) {
@@ -80,7 +80,7 @@ export class NoiseNode extends ConstantNode {
           );
         break;
       default:
-        throw new ReferenceError('Cannot activate this noise type!');
+        throw new ReferenceError("Cannot activate this noise type!");
     }
 
     this.activation = this.squash(this.state, false) * this.mask;
@@ -121,12 +121,12 @@ export class NoiseNode extends ConstantNode {
     options.update = options.update ?? true;
 
     const connectionsStates: number[] = Array.from(this.outgoing).map(
-      conn => conn.to.errorResponsibility * conn.weight * conn.gain
+      (conn) => conn.to.errorResponsibility * conn.weight * conn.gain
     );
     this.errorResponsibility = this.errorProjected =
       sum(connectionsStates) * this.derivativeState;
 
-    this.incoming.forEach(connection => {
+    this.incoming.forEach((connection) => {
       // calculate gradient
       let gradient: number = this.errorProjected * connection.eligibility;
       connection.xTrace.forEach((value, key) => {

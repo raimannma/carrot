@@ -18,18 +18,15 @@
     "build_web_dist_prod": "webpack ./build/src/index.js -o ./dist/production/web.js --mode production --env prod --target web",
     "deploy:src": "tsc && npm run build_node_dist_dev && npm run build_node_dist_prod && npm run build_web_dist_dev && npm run build_web_dist_prod",
     "deploy:docs": "typedoc --options typedoc.json",
-    "test": "mocha --require ts-node/register test/units/**/*.ts",
-    "lint": "tslint --project ./",
-    "compile": "tsc",
+    "test": "mocha build/test/**/*.js",
+    "check": "prettier --check .",
     "fix": "prettier --write .",
     "prepare": "npm run compile",
-    "pretest": "npm run compile",
-    "posttest": "npm run fix"
+    "pretest": "tsc"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run fix",
-      "pre-push": "npm run compile && npm run deploy:src && npm run deploy:docs && git add -A && git commit --no-verify -m 'Build Project'"
+      "pre-commit": "npm run check"
     }
   },
   "repository": {

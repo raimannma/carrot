@@ -1,5 +1,5 @@
-import {expose} from 'threads/worker';
-import {ALL_LOSSES, Network} from '..';
+import { expose } from "threads/worker";
+import { ALL_LOSSES, Network } from "..";
 
 export type TestWorker = (
   serializedDataSet: string,

@@ -1,5 +1,5 @@
-import {Network} from './Network';
-import {Species} from './Species';
+import { Network } from "./Network";
+import { Species } from "./Species";
 
 class Population {
   public static nodeCounter: number;
