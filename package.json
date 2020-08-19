@@ -81,7 +81,7 @@
   },
   "homepage": "https://liquidcarrot.io/",
   "dependencies": {
-    "activations": "^1.0.13",
+    "activations": "^1.0.14",
     "chai": "^4.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-node": "^11.1.0",
