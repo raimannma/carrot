@@ -19,10 +19,6 @@
         <img src="https://badges.gitter.im/Join%20Chat.svg"
              alt="Join the chat at https://gitter.im/carrot-ai/community">
     </a>
-    <a href="/LICENSE">
-        <img src="https://img.shields.io/badge/License-MIT-blue.svg"
-             alt="Carrot's License">
-    </a>
     <a href="https://github.com/liquidcarrot/carrot/issues">
         <img src="https://img.shields.io/badge/Made%20with%20%E2%99%A5%20by-Liquid%20Carrot-ff1414.svg"
              alt="Made with love">
