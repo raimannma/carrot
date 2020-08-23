@@ -42,9 +42,9 @@ export class InstinctPopulation extends Population {
       activations?: ActivationType[];
     }
   ): void {
-    for (let i = options.elitists ?? 0; i < this.populationSize; i++) {
+    for (let i = options.elitists ?? 0; i < this.networks.length; i++) {
       if (randDouble() <= mutationRate) {
-        for (let i = 0; i < mutationAmount; i++) {
+        for (let j = 0; j < mutationAmount; j++) {
           this.networks[i].mutateRandom(mutations, options);
         }
       }

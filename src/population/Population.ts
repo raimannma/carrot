@@ -28,8 +28,8 @@ export abstract class Population {
   public evolve(options: EvolveOptions): Network {
     this.calculateScores(options.fitnessFunction, options.dataset, options.loss);
     while (this.generation < options.iterations) {
-      this.breed(options.selection, options.elitism);
       this.sortNetworks();
+      this.breed(options.selection, options.elitism);
       this.mutate(options.mutations, options.mutationRate, options.mutationAmount, {
         elitists: options.elitism,
         maxNodes: options.maxNodes,
@@ -38,13 +38,14 @@ export abstract class Population {
         activations: options.activations,
       });
       this.calculateScores(options.fitnessFunction, options.dataset, options.loss);
+
       this.generation++;
-      this.log();
-
-      this.networks.forEach((network) => (network.score = undefined));
+      if (options.log && options.log % this.generation === 0) this.log();
     }
+    let best = this.getBest();
+    this.networks.forEach((network) => (network.score = undefined));
 
-    return this.getBest();
+    return best;
   }
 
   public getBest(): Network {
@@ -53,7 +54,7 @@ export abstract class Population {
   }
 
   protected sortNetworks(): void {
-    this.networks = Array.from(this.networks).sort((a: Network, b: Network) => {
+    this.networks = this.networks.sort((a: Network, b: Network) => {
       if (a.score && b.score) return b.score - a.score;
       else if (a.score) return -1;
       else if (b.score) return 1;

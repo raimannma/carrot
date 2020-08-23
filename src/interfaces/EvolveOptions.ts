@@ -126,7 +126,7 @@ export class EvolveOptions {
   /**
    * If set to n, outputs training status every n iterations. Setting `log` to 1 will log the status every iteration
    */
-  public log: number;
+  public log?: number;
   /**
    * You can schedule tasks to happen every n iterations. Paired with `options.schedule.function`
    */
@@ -177,7 +177,6 @@ export class EvolveOptions {
     this.maxConnections = Infinity;
     this.maxGates = Infinity;
     this.threads = 4;
-    this.log = -1;
     this.iterations = 1000;
     this.error = 0.05;
     this.maxStagnation = 3;

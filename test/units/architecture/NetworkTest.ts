@@ -255,49 +255,6 @@ describe("Network", () => {
       expect(final).to.be.at.most(initial / 3);
     });
   });
-
-  describe("network.evolve()", () => {
-    // similar to network.train, with the difference that this dataset requires
-    // evolving the network to be solvable
-    it("network.evolve(dataset) => {{error:{number},iterations:{number},time:{number}}}", async function (): Promise<
-      void
-    > {
-      // this.timeout(30000);
-      // const network: Network = new Network(2, 1);
-      // for (let i = 0; i < 10; i++) {
-      //   network.mutate(new AddNodeMutation());
-      // }
-      //
-      // // multiplies the two inputs
-      // const dataset: datasetType = [
-      //   { input: [1, 0], output: [0] },
-      //   { input: [0, 1], output: [0] },
-      //   { input: [1, 1], output: [1] },
-      //   { input: [2, 1], output: [2] },
-      //   { input: [2, 2], output: [4] },
-      //   { input: [2, 3], output: [6] },
-      //   { input: [3, 3], output: [9] },
-      //   { input: [-3, 3], output: [-9] },
-      // ];
-      //
-      // const initial: number = network.test(dataset);
-      //
-      // const options: EvolveOptions = new EvolveOptions();
-      // options.iterations = 10;
-      // options.dataset = dataset;
-      // const evolveReturn: {
-      //   error: number;
-      //   iterations: number;
-      //   time: number;
-      // } = await network.evolve(options);
-      // const final: number = network.test(dataset);
-      //
-      // expect(evolveReturn.error).to.be.a("number");
-      // expect(evolveReturn.iterations).to.be.a("number");
-      // expect(evolveReturn.time).to.be.a("number");
-      // expect(final).to.be.at.most(initial);
-    });
-  });
   describe("network.fromJSON", () => {
     it("testing", function () {
       this.timeout(0);
