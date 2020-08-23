@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { ALL_LOSSES } from "../../../src/methods/Loss";
-import { randDouble } from "../../../src/utils/Utils";
+import { ALL_LOSSES } from "../../../src";
+import { randDouble } from "../../../src";
 
 describe("Loss", () => {
   Object.values(ALL_LOSSES).forEach((loss) => {

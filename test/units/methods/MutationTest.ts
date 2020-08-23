@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { Network } from "../../../src/architecture/Network";
-import { NetworkJSON } from "../../../src/interfaces/NetworkJSON";
-import { AddNodeMutation } from "../../../src/methods/Mutation";
+import { Network } from "../../../src";
+import { NetworkJSON } from "../../../src";
+import { AddNodeMutation } from "../../../src";
 
 describe("Mutation", () => {
   describe("network.mutate()", () => {

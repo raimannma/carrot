@@ -33,7 +33,7 @@ function randInt(min: number, max: number): number {
  * @param max bound
  * @returns random double in [min,max)
  */
-function randDouble(min: number, max: number): number {
+function randDouble(min: number = 0, max: number = 1): number {
   return Math.random() * (max - min) + min;
 }
 

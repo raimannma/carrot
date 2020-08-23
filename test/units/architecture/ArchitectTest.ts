@@ -1,20 +1,20 @@
 import { BinaryStep, Identitiy, Logistic, RELU } from "activations";
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { Architect } from "../../../src/architecture/Architect";
-import { DenseLayer } from "../../../src/architecture/Layers/CoreLayers/DenseLayer";
-import { InputLayer } from "../../../src/architecture/Layers/CoreLayers/InputLayer";
-import { OutputLayer } from "../../../src/architecture/Layers/CoreLayers/OutputLayer";
-import { MaxPooling1DLayer } from "../../../src/architecture/Layers/PoolingLayers/MaxPooling1DLayer";
-import { GRULayer } from "../../../src/architecture/Layers/RecurrentLayers/GRULayer";
-import { HopfieldLayer } from "../../../src/architecture/Layers/RecurrentLayers/HopfieldLayer";
-import { LSTMLayer } from "../../../src/architecture/Layers/RecurrentLayers/LSTMLayer";
-import { MemoryLayer } from "../../../src/architecture/Layers/RecurrentLayers/MemoryLayer";
-import { RNNLayer } from "../../../src/architecture/Layers/RecurrentLayers/RNNLayer";
-import { Network } from "../../../src/architecture/Network";
-import { Node } from "../../../src/architecture/Node";
-import { PoolNode } from "../../../src/architecture/Nodes/PoolNode";
-import { randInt } from "../../../src/utils/Utils";
+import { Architect } from "../../../src";
+import { DenseLayer } from "../../../src";
+import { InputLayer } from "../../../src";
+import { OutputLayer } from "../../../src";
+import { MaxPooling1DLayer } from "../../../src";
+import { GRULayer } from "../../../src";
+import { HopfieldLayer } from "../../../src";
+import { LSTMLayer } from "../../../src";
+import { MemoryLayer } from "../../../src";
+import { RNNLayer } from "../../../src";
+import { Network } from "../../../src";
+import { Node } from "../../../src";
+import { PoolNode } from "../../../src";
+import { randInt } from "../../../src";
 
 describe("ArchitectTest", () => {
   it("Build Multilayer-Perceptron", () => {

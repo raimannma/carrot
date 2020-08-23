@@ -1,12 +1,12 @@
 import { ActivationType } from "activations";
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { Connection } from "../../../src/architecture/Connection";
-import { Node } from "../../../src/architecture/Node";
-import { NodeType } from "../../../src/enums/NodeType";
-import { NodeJSON } from "../../../src/interfaces/NodeJSON";
-import { ModBiasMutation } from "../../../src/methods/Mutation";
-import { randDouble, randInt } from "../../../src/utils/Utils";
+import { Connection } from "../../../src";
+import { Node } from "../../../src";
+import { NodeType } from "../../../src";
+import { NodeJSON } from "../../../src";
+import { ModBiasMutation } from "../../../src";
+import { randDouble, randInt } from "../../../src";
 
 describe("Node", () => {
   describe("node.connect()", () => {

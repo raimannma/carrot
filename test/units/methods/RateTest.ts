@@ -6,8 +6,8 @@ import {
   InverseRate,
   Rate,
   StepRate,
-} from "../../../src/methods/Rate";
-import { randInt } from "../../../src/utils/Utils";
+} from "../../../src";
+import { randInt } from "../../../src";
 
 describe("Rate", () => {
   it("FixedRate", () => {

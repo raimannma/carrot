@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { Connection } from "../../../src/architecture/Connection";
-import { Node } from "../../../src/architecture/Node";
-import { ConnectionJSON } from "../../../src/interfaces/ConnectionJSON";
-import { randDouble } from "../../../src/utils/Utils";
+import { Connection } from "../../../src";
+import { Node } from "../../../src";
+import { ConnectionJSON } from "../../../src";
+import { randDouble } from "../../../src";
 
 const was: {
   connected: (connection: Connection, from: Node, to: Node) => void;
