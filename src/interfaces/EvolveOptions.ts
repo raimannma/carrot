@@ -97,7 +97,7 @@ export class EvolveOptions {
    * @param dataset The dataset to test the networks.
    */
   public fitnessFunction?: (
-    population: Network[],
+    population: Iterable<Network>,
     dataset?: {
       /**
        * The input values
@@ -108,7 +108,7 @@ export class EvolveOptions {
        */
       output: number[];
     }[]
-  ) => Promise<void>;
+  ) => void;
   /**
    * Specify the loss function for the evolution, this tells a genome in the population how well it's performing. Default: methods.loss.MSE (recommended).
    */

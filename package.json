@@ -23,8 +23,7 @@
     "check:src": "prettier --check \"./src/**/*.ts\"",
     "check:test": "prettier --check \"./test/**/*.ts\"",
     "fix": "prettier --write .",
-    "pretest": "tsc",
-    "posttest": "npm run check"
+    "pretest": "tsc && npm run fix"
   },
   "husky": {
     "hooks": {

@@ -1,11 +1,10 @@
-import * as TimSort from "timsort";
-import { pickRandom, randDouble, Species } from "..";
-
 /**
  * Genetic Algorithm Selection Methods (Genetic Operator)
  *
  * @see [Genetic Algorithm - Selection]{@link https://en.wikipedia.org/wiki/Selection_(genetic_algorithm)}
  */
+import { Network, pickRandom, randDouble } from "..";
+
 abstract class Selection {
   /**
    * Selects a genome from the population according to the Selection method.
@@ -13,7 +12,7 @@ abstract class Selection {
    * @param population the pool of networks
    * @returns the selected genome
    */
-  public abstract select(population: Species[]): Species;
+  public abstract select(population: Network[]): Network;
 }
 
 /**
@@ -28,7 +27,7 @@ class FitnessProportionateSelection extends Selection {
    * @param population the pool of networks
    * @returns the selected genome
    */
-  public select(population: Species[]): Species {
+  public select(population: Network[]): Network {
     let totalFitness = 0;
     let minimalFitness = 0;
     for (const genome of population) {
@@ -79,7 +78,7 @@ class PowerSelection extends Selection {
    * @param population the pool of networks
    * @returns the selected genome
    */
-  public select(population: Species[]): Species {
+  public select(population: Network[]): Network {
     return population[
       Math.floor(Math.random() ** this.power * population.length)
     ];
@@ -118,7 +117,7 @@ class TournamentSelection extends Selection {
    * @param population the pool of networks
    * @returns the selected genome
    */
-  public select(population: Species[]): Species {
+  public select(population: Network[]): Network {
     if (this.size > population.length) {
       throw new Error(
         "Your tournament size should be lower than the population size, please change methods.selection.TOURNAMENT.size"
@@ -126,16 +125,17 @@ class TournamentSelection extends Selection {
     }
 
     // Create a tournament
-    const individuals: Species[] = [];
+    const individuals: Network[] = [];
     for (let i = 0; i < this.size; i++) {
       individuals.push(pickRandom(population));
     }
 
     // Sort the tournament individuals by score
-    TimSort.sort(individuals, (a: Species, b: Species) => {
-      return b.score === undefined || a.score === undefined
-        ? 0
-        : b.score - a.score;
+    individuals.sort((a, b) => {
+      if (a.score && b.score) return b.score - a.score;
+      else if (a.score) return -1;
+      else if (b.score) return 1;
+      else return 0;
     });
 
     // Select an individual

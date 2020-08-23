@@ -1,20 +1,14 @@
 import { ActivationType } from "activations";
-import { spawn, Worker } from "threads";
-import { Pool } from "threads/dist";
 import * as TimSort from "timsort";
 import {
   ALL_MUTATIONS,
   ConnectionJSON,
-  EvolveOptions,
   Mutation,
   NetworkJSON,
   NodeType,
-  SubNodeMutation,
   TrainOptions,
 } from "..";
-import { ALL_LOSSES, lossType, MSELoss } from "../methods/Loss";
-import { TestWorker } from "../multithreading/TestWorker";
-import { NEAT } from "../NEAT";
+import { lossType, MSELoss } from "../methods/Loss";
 import {
   pairing,
   pickRandom,
@@ -25,7 +19,6 @@ import {
 } from "../utils/Utils";
 import { Connection } from "./Connection";
 import { Node } from "./Node";
-import { Species } from "./Species";
 
 /**
  * Create a neural network
@@ -35,10 +28,6 @@ import { Species } from "./Species";
  * @constructs Network
  */
 export class Network {
-  /**
-   * Species of this network
-   */
-  public species: Species | null;
   /**
    * The input size of this network.
    */
@@ -63,6 +52,7 @@ export class Network {
    * The score of this network for evolution.
    */
   public score: number | undefined;
+  adjustedFitness: number;
 
   constructor(inputSize: number, outputSize: number) {
     this.inputSize = inputSize;
@@ -72,7 +62,7 @@ export class Network {
     this.connections = new Set<Connection>();
     this.gates = new Set<Connection>();
     this.score = undefined;
-    this.species = null;
+    this.adjustedFitness = 0;
 
     // Create input and output nodes
     for (let i = 0; i < inputSize; i++) {
@@ -144,7 +134,7 @@ export class Network {
    *
    * @returns {Network} New network created from mixing parent networks
    */
-  public static crossOver(network1: Network, network2: Network): Network {
+  public static crossover(network1: Network, network2: Network): Network {
     if (
       network1.inputSize !== network2.inputSize ||
       network1.outputSize !== network2.outputSize
@@ -343,7 +333,7 @@ export class Network {
    *
    * @returns {Connection[]} An array of the formed connections
    */
-  public connect(from: Node, to: Node, weight = 0): Connection {
+  public connect(from: Node, to: Node, weight: number = 0): Connection {
     const connection: Connection = from.connect(to, weight); // run node-level connect
     this.connections.add(connection); // add it to the array
     return connection;
@@ -522,10 +512,7 @@ export class Network {
    * @param {Node} node Node to remove from the network
    * @param keepGates
    */
-  public removeNode(
-    node: Node,
-    keepGates: boolean = new SubNodeMutation().keepGates
-  ): void {
+  public removeNode(node: Node, keepGates: boolean = true): void {
     if (!this.nodes.includes(node)) {
       throw new ReferenceError("This node does not exist in the network!");
     }
@@ -872,163 +859,26 @@ export class Network {
   }
 
   /**
-   * Evolves the network to reach a lower error on a dataset using the [NEAT algorithm](http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf)
-   *
-   * If both `iterations` and `error` options are unset, evolve will default to `iterations` as an end condition.
-   *
-   * @param {object} [options] Configuration options
-   *
-   * @returns {{error:{number},iterations:{number},time:{number}}} A summary object of the network's performance. <br /> Properties include: `error` - error of the best genome, `iterations` - generations used to evolve networks, `time` - clock time elapsed while evolving
-   */
-  public async evolve(
-    options: EvolveOptions = new EvolveOptions()
-  ): Promise<{
-    /**
-     * The loss of the network after training.
-     */
-    error: number;
-    /**
-     * The iterations took for training the network.
-     */
-    iterations: number;
-    /**
-     * The time from begin to end in milliseconds
-     */
-    time: number;
-  }> {
-    if (
-      !options.fitnessFunction &&
-      options.dataset &&
-      (options.dataset[0].input.length !== this.inputSize ||
-        options.dataset[0].output.length !== this.outputSize)
-    ) {
-      throw new Error(
-        "Dataset input/output size should be same as network input/output size!"
-      );
-    }
-
-    // set options to default if necessary
-    options.input = this.inputSize;
-    options.output = this.outputSize;
-
-    const start: number = Date.now();
-
-    // tslint:disable-next-line:no-any
-    let workerPool: Pool<any> | null = null;
-
-    if (!options.fitnessFunction) {
-      // if no fitness function is given
-      // create default one
-
-      // Serialize the dataset using JSON
-      const serializedDataSet: string = JSON.stringify(options.dataset);
-      const lossIndex: number = Object.values(ALL_LOSSES).indexOf(options.loss);
-      // init a pool of workers
-      workerPool = Pool(
-        () => spawn<TestWorker>(new Worker("../multithreading/TestWorker")),
-        options.threads
-      );
-      options.fitnessFunction = async function (
-        population: Network[]
-      ): Promise<void> {
-        for (const genome of population) {
-          // add a task to the workerPool's queue
-          if (workerPool) {
-            workerPool.queue(async (test: TestWorker) => {
-              if (genome === undefined) {
-                throw new ReferenceError();
-              }
-              // test the genome
-              genome.score = -(await test(
-                serializedDataSet,
-                JSON.stringify(genome.toJSON()),
-                lossIndex
-              ));
-            });
-          }
-        }
-
-        if (workerPool) {
-          await workerPool.completed(); // wait until every task is done
-        }
-      };
-    }
-    options.template = this; // set this network as template for first generation
-
-    const neat: NEAT = new NEAT(options);
-
-    let error: number;
-    let bestFitness = 0;
-    let bestGenome: Network | null = null;
-
-    // run until error goal is reached or iteration goal is reached
-    do {
-      const fittest: Network = await neat.evolve(); // run one generation
-
-      if (!fittest.score) {
-        throw new ReferenceError();
-      }
-
-      error = fittest.score;
-
-      if (neat.options.generation === 1 || fittest.score > bestFitness) {
-        bestFitness = fittest.score;
-        bestGenome = fittest;
-      }
-
-      if (
-        options.schedule &&
-        neat.options.generation % options.schedule.iterations === 0
-      ) {
-        options.schedule.function(
-          fittest.score,
-          -error,
-          neat.options.generation
-        );
-      }
-    } while (
-      error < -options.error &&
-      (options.iterations === 0 || neat.options.generation < options.iterations)
-    );
-
-    if (bestGenome) {
-      // set this network to the fittest from NEAT
-      this.nodes = bestGenome.nodes;
-      this.connections = bestGenome.connections;
-      this.gates = bestGenome.gates;
-
-      if (options.clear) {
-        this.clear();
-      }
-    }
-
-    if (workerPool !== null) {
-      await workerPool.terminate(); // stop all processes
-    }
-
-    return {
-      error: -error,
-      iterations: neat.options.generation,
-      time: Date.now() - start,
-    };
-  }
-
-  /**
    * Distance function
-   * @param g2 other network
+   * @param genome2 other network
    * @param c1
    * @param c2
    * @param c3
    */
-  public distance(g2: Network, c1: number, c2: number, c3: number): number {
+  public distance(
+    genome2: Network,
+    c1: number,
+    c2: number,
+    c3: number
+  ): number {
     // set node indices
     for (let i = 0; i < this.nodes.length; i++) {
       this.nodes[i].index = i;
     }
 
     // set node indices
-    for (let i = 0; i < g2.nodes.length; i++) {
-      g2.nodes[i].index = i;
+    for (let i = 0; i < genome2.nodes.length; i++) {
+      genome2.nodes[i].index = i;
     }
 
     let indexG1 = 0;
@@ -1037,7 +887,7 @@ export class Network {
     const connections1: Connection[] = Array.from(this.connections).filter(
       (conn) => conn !== undefined
     );
-    const connections2: Connection[] = Array.from(g2.connections).filter(
+    const connections2: Connection[] = Array.from(genome2.connections).filter(
       (conn) => conn !== undefined
     );
 
@@ -1056,7 +906,7 @@ export class Network {
       connections2.length - 1
     ].getInnovationID();
     if (highestInnovationID1 < highestInnovationID2) {
-      return g2.distance(this, c1, c2, c3);
+      return genome2.distance(this, c1, c2, c3);
     }
 
     let disjointGenes = 0;
@@ -1093,7 +943,7 @@ export class Network {
     totalWeightDiff /= similarGenes;
     const excessGenes: number = this.connections.size - indexG1;
 
-    let N: number = Math.max(this.connections.size, g2.connections.size);
+    let N: number = Math.max(this.connections.size, genome2.connections.size);
     if (N < 20) {
       N = 1;
     }
