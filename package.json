@@ -23,7 +23,7 @@
     "check:src": "prettier --check \"./src/**/*.ts\"",
     "check:test": "prettier --check \"./test/**/*.ts\"",
     "fix": "prettier --write .",
-    "pretest": "tsc && npm run fix"
+    "pretest": "tsc"
   },
   "husky": {
     "hooks": {
@@ -31,7 +31,7 @@
     }
   },
   "lint-staged": {
-    "**/*": "prettier --write"
+    "**/*": "npm run fix"
   },
   "repository": {
     "type": "git",

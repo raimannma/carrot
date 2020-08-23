@@ -1,11 +1,5 @@
 import { ActivationType, ALL_ACTIVATIONS } from "activations";
-import {
-  FEEDFORWARD_MUTATIONS,
-  FitnessProportionateSelection,
-  Mutation,
-  Network,
-  Selection,
-} from "..";
+import { FEEDFORWARD_MUTATIONS, FitnessProportionateSelection, Mutation, Network, Selection } from "..";
 import { lossType, MSELoss } from "../methods/Loss";
 import { TrainOptions } from "./TrainOptions";
 

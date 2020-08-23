@@ -8,16 +8,5 @@
   "readme": "README.md",
   "name": "Carrot",
   "theme": "node_modules/eledoc/bin/default/",
-  "toc": [
-    "NEAT",
-    "Network",
-    "Layer",
-    "Architect",
-    "Node",
-    "Connection",
-    "Mutation",
-    "Rate",
-    "Selection",
-    "Species"
-  ]
+  "toc": ["NEAT", "Network", "Layer", "Architect", "Node", "Connection", "Mutation", "Rate", "Selection", "Species"]
 }

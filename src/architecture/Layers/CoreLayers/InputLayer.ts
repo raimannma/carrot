@@ -25,13 +25,7 @@ export class InputLayer extends Layer {
     if (options.noise) {
       const noiseLayer: NoiseLayer = new NoiseLayer(outputSize);
       noiseLayer.outputNodes.forEach((node) => this.outputNodes.add(node));
-      this.connections.push(
-        ...Layer.connect(
-          this.nodes,
-          noiseLayer,
-          noiseLayer.getDefaultIncomingConnectionType()
-        )
-      );
+      this.connections.push(...Layer.connect(this.nodes, noiseLayer, noiseLayer.getDefaultIncomingConnectionType()));
     } else {
       this.nodes.forEach((node) => this.outputNodes.add(node));
     }

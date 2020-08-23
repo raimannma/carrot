@@ -48,11 +48,7 @@ describe("Network", () => {
       const network: Network = new Network(10, 20);
       const sourceNode: Node = new Node();
       const targetNode: Node = network.nodes[25];
-      const formedConnection: Connection = network.connect(
-        sourceNode,
-        targetNode,
-        7
-      );
+      const formedConnection: Connection = network.connect(sourceNode, targetNode, 7);
       expect(formedConnection).to.be.an.instanceOf(Connection);
       expect(formedConnection.from).eql(sourceNode);
       expect(formedConnection.to).eql(targetNode);
@@ -181,9 +177,7 @@ describe("Network", () => {
       const testNetwork: Network = createTestNetwork();
       const nodesBefore: Node[] = testNetwork.nodes.slice();
       testNetwork.mutate(new AddNodeMutation());
-      const node: Node = testNetwork.nodes.filter(
-        (node) => !nodesBefore.includes(node)
-      )[0];
+      const node: Node = testNetwork.nodes.filter((node) => !nodesBefore.includes(node))[0];
       const connection: Connection = node.connect(testNetwork.nodes[20]);
 
       const beforeNumberOfGates: number = testNetwork.gates.size;

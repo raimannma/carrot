@@ -41,12 +41,8 @@ export class Species {
 
   isCompatible(network: Network) {
     return (
-      network.distance(
-        this.representative,
-        NEATPopulation.c1,
-        NEATPopulation.c2,
-        NEATPopulation.c3
-      ) < NEATPopulation.distanceThreshold
+      network.distance(this.representative, NEATPopulation.c1, NEATPopulation.c2, NEATPopulation.c3) <
+      NEATPopulation.distanceThreshold
     );
   }
 
@@ -82,9 +78,7 @@ export class Species {
       this.bestNetwork = bestNetwork.deepCopy();
       this.stagnation = 0;
 
-      this.representative = representativeIsBest
-        ? bestNetwork
-        : pickRandom(this.members);
+      this.representative = representativeIsBest ? bestNetwork : pickRandom(this.members);
     } else {
       // if not increase stagnation value
       this.stagnation++;
@@ -94,8 +88,7 @@ export class Species {
   sumScores(): void {
     this.members.forEach((network) => {
       if (network.score) this.score += network.score;
-      else
-        throw new ReferenceError("Network needs score for fitness evaluation!");
+      else throw new ReferenceError("Network needs score for fitness evaluation!");
     });
   }
 
@@ -103,8 +96,7 @@ export class Species {
     let sum: number = 0;
     this.members.forEach((network) => {
       if (network.score) sum += network.adjustedFitness;
-      else
-        throw new ReferenceError("Network needs score for fitness evaluation!");
+      else throw new ReferenceError("Network needs score for fitness evaluation!");
     });
     return sum;
   }
@@ -131,10 +123,7 @@ export class Species {
    * @param percentage the kill rate
    * @param representativeIsBest is representative always the best member?
    */
-  public cull(
-    percentage: number = 0.5,
-    representativeIsBest: boolean = true
-  ): void {
+  public cull(percentage: number = 0.5, representativeIsBest: boolean = true): void {
     const arr: Network[] = this.sortedNetworksArray(); // descending
 
     const amount: number = Math.floor(percentage * this.members.size);
@@ -150,10 +139,7 @@ export class Species {
    */
   public breed(selection: Selection): Network {
     let sortedMembers = this.sortedNetworksArray();
-    return Network.crossover(
-      selection.select(sortedMembers),
-      selection.select(sortedMembers)
-    );
+    return Network.crossover(selection.select(sortedMembers), selection.select(sortedMembers));
   }
 
   /**
@@ -167,9 +153,7 @@ export class Species {
    * to string
    */
   public toString(): String {
-    return (
-      "Species={Members: " + this.members.size + "; Score: " + this.score + "}"
-    );
+    return "Species={Members: " + this.members.size + "; Score: " + this.score + "}";
   }
 
   public sortedNetworksArray(): Network[] {
@@ -183,8 +167,7 @@ export class Species {
 
   fitnessSharing(): void {
     this.members.forEach((network) => {
-      if (network.score)
-        network.adjustedFitness = network.score / this.members.size;
+      if (network.score) network.adjustedFitness = network.score / this.members.size;
       else throw new ReferenceError("Network needs score for fitness sharing!");
     });
   }

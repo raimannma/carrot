@@ -79,9 +79,7 @@ class PowerSelection extends Selection {
    * @returns the selected genome
    */
   public select(population: Network[]): Network {
-    return population[
-      Math.floor(Math.random() ** this.power * population.length)
-    ];
+    return population[Math.floor(Math.random() ** this.power * population.length)];
   }
 }
 
@@ -148,9 +146,4 @@ class TournamentSelection extends Selection {
   }
 }
 
-export {
-  Selection,
-  FitnessProportionateSelection,
-  PowerSelection,
-  TournamentSelection,
-};
+export { Selection, FitnessProportionateSelection, PowerSelection, TournamentSelection };

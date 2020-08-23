@@ -15,8 +15,7 @@ export class InstinctPopulation extends Population {
   }
 
   protected breed(selection: Selection, elitists: number): void {
-    if (elitists > this.populationSize)
-      throw new RangeError("Can`t evolve! Elitism exceeds population size!");
+    if (elitists > this.populationSize) throw new RangeError("Can`t evolve! Elitism exceeds population size!");
 
     let newPopulation: Network[] = [];
     for (let i = 0; i < elitists; i++) {

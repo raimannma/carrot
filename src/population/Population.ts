@@ -19,42 +19,25 @@ export abstract class Population {
     this.populationSize = populationSize;
 
     // Create Networks
-    this.networks = this.createNetworks(
-      options.template,
-      options.inputSize,
-      options.outputSize
-    );
+    this.networks = this.createNetworks(options.template, options.inputSize, options.outputSize);
 
     // Initialize variables
     this.generation = 0;
   }
 
   public evolve(options: EvolveOptions): Network {
-    this.calculateScores(
-      options.fitnessFunction,
-      options.dataset,
-      options.loss
-    );
+    this.calculateScores(options.fitnessFunction, options.dataset, options.loss);
     while (this.generation < options.iterations) {
       this.breed(options.selection, options.elitism);
       this.sortNetworks();
-      this.mutate(
-        options.mutations,
-        options.mutationRate,
-        options.mutationAmount,
-        {
-          elitists: options.elitism,
-          maxNodes: options.maxNodes,
-          maxConnections: options.maxConnections,
-          maxGates: options.maxGates,
-          activations: options.activations,
-        }
-      );
-      this.calculateScores(
-        options.fitnessFunction,
-        options.dataset,
-        options.loss
-      );
+      this.mutate(options.mutations, options.mutationRate, options.mutationAmount, {
+        elitists: options.elitism,
+        maxNodes: options.maxNodes,
+        maxConnections: options.maxConnections,
+        maxGates: options.maxGates,
+        activations: options.activations,
+      });
+      this.calculateScores(options.fitnessFunction, options.dataset, options.loss);
       this.generation++;
       this.log();
 
@@ -93,35 +76,21 @@ export abstract class Population {
     }
   ): void;
 
-  protected createNetworks(
-    template?: Network,
-    inputSize?: number,
-    outputSize?: number
-  ): Network[] {
+  protected createNetworks(template?: Network, inputSize?: number, outputSize?: number): Network[] {
     let networks = [];
     for (let i = 0; i < this.populationSize; i++) {
       if (template) networks.push(template.deepCopy());
-      else if (inputSize && outputSize)
-        networks.push(new Network(inputSize, outputSize));
-      else
-        throw new Error(
-          "You must provide either a template network or input and output size!"
-        );
+      else if (inputSize && outputSize) networks.push(new Network(inputSize, outputSize));
+      else throw new Error("You must provide either a template network or input and output size!");
     }
     return networks;
   }
 
   protected log() {
-    console.log(
-      "Generation: " + this.generation + "; Error: " + this.getBest().score
-    );
+    console.log("Generation: " + this.generation + "; Error: " + this.getBest().score);
   }
 
-  protected calculateScores(
-    fitnessFunction?: fitnessFunction,
-    dataset?: datasetType,
-    loss?: lossType
-  ): void {
+  protected calculateScores(fitnessFunction?: fitnessFunction, dataset?: datasetType, loss?: lossType): void {
     if (fitnessFunction) {
       fitnessFunction(this.networks, dataset);
     } else if (dataset) {
@@ -134,9 +103,7 @@ export abstract class Population {
         if (!network.score) hasScores = false;
       });
       if (!hasScores)
-        throw new Error(
-          "If network scores aren't set, you have to specify a fitness function or a dataset!"
-        );
+        throw new Error("If network scores aren't set, you have to specify a fitness function or a dataset!");
     }
   }
 }

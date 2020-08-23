@@ -14,6 +14,7 @@ export class NEATPopulation extends Population {
   public static distanceThreshold: number;
   private static survivorRate: number;
   private static speciesStagnationLimit: number;
+  private static populationStagnationLimit: number;
   private species: Species[];
   private stagnation: number;
   private highScore: number;
@@ -30,6 +31,7 @@ export class NEATPopulation extends Population {
       survivorRate?: number;
       speciesDistanceThreshold?: number;
       speciesStagnationLimit?: number;
+      populationStagnationLimit?: number;
     }
   ) {
     super(populationSize, options);
@@ -41,8 +43,8 @@ export class NEATPopulation extends Population {
     NEATPopulation.c3 = options.c1 ?? 1;
     NEATPopulation.survivorRate = options.survivorRate ?? 0.5;
     NEATPopulation.distanceThreshold = options.speciesDistanceThreshold ?? 2;
-    NEATPopulation.speciesStagnationLimit =
-      options.speciesStagnationLimit ?? 15;
+    NEATPopulation.speciesStagnationLimit = options.speciesStagnationLimit ?? 15;
+    NEATPopulation.populationStagnationLimit = options.populationStagnationLimit ?? 15;
   }
 
   protected breed(selection: Selection, elitism: number): void {
@@ -53,9 +55,11 @@ export class NEATPopulation extends Population {
 
     // check for stagnation
     if (this.species[0].highScore > this.highScore) {
+      // new high score
       this.stagnation = 0;
       this.highScore = this.species[0].highScore;
     } else {
+      // increase stagnation counter
       this.stagnation++;
     }
 
@@ -84,11 +88,7 @@ export class NEATPopulation extends Population {
     throw new Error("Not implemented!");
   }
 
-  protected createNetworks(
-    template?: Network,
-    inputSize?: number,
-    outputSize?: number
-  ): Network[] {
+  protected createNetworks(template?: Network, inputSize?: number, outputSize?: number): Network[] {
     if (template) {
       NEATPopulation.nodeIDs = this.createNodeIDsFromTemplate(template);
       NEATPopulation.connIDs = this.createConnIDsFromTemplate(template);
@@ -111,9 +111,7 @@ export class NEATPopulation extends Population {
    * @private
    */
   private killStaleSpecies() {
-    this.species = this.species.filter(
-      (species) => species.stagnation < NEATPopulation.speciesStagnationLimit
-    );
+    this.species = this.species.filter((species) => species.stagnation < NEATPopulation.speciesStagnationLimit);
   }
 
   /**
@@ -156,15 +154,11 @@ export class NEATPopulation extends Population {
   }
 
   private createConnIDsFromTemplate(template: Network): Map<number, number> {
-    if (NEATPopulation.nodeCounter === 0)
-      throw new ReferenceError("Can't create connection ids without node ids");
+    if (NEATPopulation.nodeCounter === 0) throw new ReferenceError("Can't create connection ids without node ids");
 
     const connIDs = new Map<number, number>();
     template.connections.forEach((connection) => {
-      connIDs.set(
-        pairing(connection.from.id, connection.to.id),
-        NEATPopulation.connCounter
-      );
+      connIDs.set(pairing(connection.from.id, connection.to.id), NEATPopulation.connCounter);
       connection.id = NEATPopulation.connCounter;
       NEATPopulation.connCounter++;
     });
@@ -212,8 +206,7 @@ export class NEATPopulation extends Population {
   private killBadSpecies(): void {
     let averageSum = this.sumOfAvgAdjustedFitnessScores();
     this.species = this.species.filter(
-      (species) =>
-        (species.getAvgAdjustedScore() / averageSum) * this.populationSize >= 1
+      (species) => (species.getAvgAdjustedScore() / averageSum) * this.populationSize >= 1
     );
   }
 
@@ -251,9 +244,7 @@ export class NEATPopulation extends Population {
 
       // calculate the number of children from this species
       let avgAdjustedScore = species.getAvgAdjustedScore();
-      let numChildren: number = Math.floor(
-        (avgAdjustedScore / averageSum) * this.populationSize - 1
-      );
+      let numChildren: number = Math.floor((avgAdjustedScore / averageSum) * this.populationSize - 1);
       // breed new children and add them to the new population
       for (let i = 0; i < numChildren; i++) {
         newPopulation.push(species.breed(selection));

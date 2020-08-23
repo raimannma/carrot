@@ -66,19 +66,8 @@ import {
   SubSelfConnectionMutation,
   SwapNodesMutation,
 } from "./methods/Mutation";
-import {
-  ExponentialRate,
-  FixedRate,
-  InverseRate,
-  Rate,
-  StepRate,
-} from "./methods/Rate";
-import {
-  FitnessProportionateSelection,
-  PowerSelection,
-  Selection,
-  TournamentSelection,
-} from "./methods/Selection";
+import { ExponentialRate, FixedRate, InverseRate, Rate, StepRate } from "./methods/Rate";
+import { FitnessProportionateSelection, PowerSelection, Selection, TournamentSelection } from "./methods/Selection";
 import {
   avg,
   generateGaussian,
