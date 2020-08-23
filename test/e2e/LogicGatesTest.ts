@@ -74,12 +74,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.NOT;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -92,12 +92,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.NOT;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -122,12 +122,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.AND;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -140,12 +140,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.AND;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -170,12 +170,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.OR;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -188,12 +188,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.OR;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -218,12 +218,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.NAND;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -236,12 +236,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.NAND;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -266,12 +266,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.NOR;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -284,12 +284,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.NOR;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -314,12 +314,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.XOR;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -332,12 +332,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.XOR;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -362,12 +362,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.XNOR;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });
@@ -380,12 +380,12 @@ describe("Logic Gates", () => {
 
     let dataset = data.XNOR;
 
-    const initial: number = population.getBest().test(dataset);
+    const initial: number = population.getRandom().test(dataset);
     const options: EvolveOptions = new EvolveOptions();
     options.iterations = 20;
     options.dataset = dataset;
-    population.evolve(options);
-    const final: number = population.getBest().test(dataset);
+    const best: Network = population.evolve(options);
+    const final: number = best.test(dataset);
 
     expect(final).to.be.at.most(initial);
   });

@@ -53,7 +53,7 @@ class AddNodeMutation extends Mutation {
    * Constructs a AddNodeMutation object
    * @param randomActivation Should choose a random activation for a new node?
    */
-  constructor(randomActivation = true) {
+  constructor(randomActivation: boolean = true) {
     super();
     this.randomActivation = randomActivation;
   }
@@ -117,7 +117,7 @@ class SubNodeMutation extends Mutation {
    */
   public readonly keepGates: boolean;
 
-  constructor(keepGates = true) {
+  constructor(keepGates: boolean = true) {
     super();
     this.keepGates = keepGates;
   }
@@ -222,7 +222,7 @@ class ModWeightMutation extends Mutation {
    * @param min The minimum weight.
    * @param max The maximum weight.
    */
-  constructor(min = -1, max = 1) {
+  constructor(min: number = -1, max: number = 1) {
     super();
     this.min = min;
     this.max = max;
@@ -259,7 +259,7 @@ class ModBiasMutation extends Mutation {
    * @param min The minimum bias.
    * @param max The maximum bias.
    */
-  constructor(min = -1, max = 1) {
+  constructor(min: number = -1, max: number = 1) {
     super();
     this.min = min;
     this.max = max;
@@ -291,7 +291,7 @@ class ModActivationMutation extends Mutation {
    * Constructs a ModActivationMutation object
    * @param mutateOutput Can the output be mutated?
    */
-  constructor(mutateOutput = false) {
+  constructor(mutateOutput: boolean = false) {
     super();
     this.mutateOutput = mutateOutput;
   }
@@ -484,7 +484,7 @@ class SwapNodesMutation extends Mutation {
    * Constructs a SwapNodeMutation object
    * @param mutateOutput Can the output be mutated?
    */
-  constructor(mutateOutput = false) {
+  constructor(mutateOutput: boolean = false) {
     super();
     this.mutateOutput = mutateOutput;
   }

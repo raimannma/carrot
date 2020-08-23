@@ -47,7 +47,13 @@ export class NEATPopulation extends Population {
     NEATPopulation.populationStagnationLimit = options.populationStagnationLimit ?? 15;
   }
 
-  protected breed(selection: Selection, elitism: number): void {
+  /**
+   * Breeding the new population
+   * @param selection [Selection method](selection) for evolution (e.g. methods.Selection.FITNESSPROPORTIONATE).
+   * @param elitism Elitism of every evolution loop. [Elitism in genetic algorithms.](https://www.researchgate.net/post/WhatismeantbythetermElitismintheGeneticAlgorithm)
+   * @protected
+   */
+  protected breed(selection: Selection, elitism: number): Network[] {
     this.speciate(); // create species
     this.calculateScores(); // calculate scores for every network
     this.species.forEach((species: Species) => species.updateScore()); // update scores of all species
@@ -70,32 +76,57 @@ export class NEATPopulation extends Population {
     // remove species that aren't able to breed children
     this.killBadSpecies();
     // reproduce the population by breeding new children
-    this.reproduce(selection);
+    return this.reproduce(selection);
   }
 
+  /**
+   * Mutate the population.
+   * @param mutations Sets allowed [mutation methods](Mutation) for evolution, a random mutation method will be chosen from the array when mutation occurs. Optional, but default methods are non-recurrent.
+   * @param mutationRate Sets the mutation rate. If set to 0.3, 30% of the new population will be mutated.
+   * @param mutationAmount If mutation occurs (randomNumber < mutationRate), sets amount of times a mutation method will be applied to the network.
+   * @param options more options relevant for the mutation functions
+   * @protected
+   */
   protected mutate(
     mutations: Mutation[],
     mutationRate: number,
     mutationAmount: number,
     options: {
-      elitists?: number;
-      maxNodes?: number;
-      maxConnections?: number;
-      maxGates?: number;
-      activations?: ActivationType[];
+      elitists: number;
+      maxNodes: number;
+      maxConnections: number;
+      maxGates: number;
+      activations: ActivationType[];
     }
   ): void {
     throw new Error("Not implemented!");
   }
 
+  /**
+   * Create networks to initialize this population
+   * @param template the template which gets copied for the whole population if provided
+   * @param inputSize if no template is given creating new networks with this input size
+   * @param outputSize if no template is given creating new networks with this output size
+   * @protected
+   */
   protected createNetworks(template?: Network, inputSize?: number, outputSize?: number): Network[] {
     if (template) {
       NEATPopulation.nodeIDs = this.createNodeIDsFromTemplate(template);
       NEATPopulation.connIDs = this.createConnIDsFromTemplate(template);
     }
-    return super.createNetworks(template, inputSize, outputSize);
+    const networks = [];
+    for (let i = 0; i < this.populationSize; i++) {
+      if (template) networks.push(template.deepCopy());
+      else if (inputSize && outputSize) networks.push(new Network(inputSize, outputSize, true));
+      else throw new Error("You must provide either a template network or input and output size!");
+    }
+    return networks;
   }
 
+  /**
+   * Logging after one epoch.
+   * @protected
+   */
   protected log(): void {
     console.log("----------------------------");
     console.log("Generation: " + this.generation);
@@ -110,7 +141,7 @@ export class NEATPopulation extends Population {
    * Kills species that continue to stagnate
    * @private
    */
-  private killStaleSpecies() {
+  private killStaleSpecies(): void {
     this.species = this.species.filter((species) => species.stagnation < NEATPopulation.speciesStagnationLimit);
   }
 
@@ -118,7 +149,7 @@ export class NEATPopulation extends Population {
    * Sort species by their highest scoring network
    * @private
    */
-  private sortSpecies() {
+  private sortSpecies(): void {
     this.species = this.species.sort((a: Species, b: Species) => {
       if (a.highScore && b.highScore) return b.highScore - a.highScore;
       else if (a.highScore) return -1;
@@ -170,7 +201,7 @@ export class NEATPopulation extends Population {
    * Put networks with a specific distance into the same species
    * @private
    */
-  private speciate() {
+  private speciate(): void {
     this.species.forEach((species) => species.reset());
     this.networks.forEach((genome) => {
       let found = false;
@@ -204,7 +235,7 @@ export class NEATPopulation extends Population {
    * @private
    */
   private killBadSpecies(): void {
-    let averageSum = this.sumOfAvgAdjustedFitnessScores();
+    const averageSum = this.sumOfAvgAdjustedFitnessScores();
     this.species = this.species.filter(
       (species) => (species.getAvgAdjustedScore() / averageSum) * this.populationSize >= 1
     );
@@ -216,7 +247,7 @@ export class NEATPopulation extends Population {
    */
   private sumOfAvgAdjustedFitnessScores(): number {
     let sum: number = 0;
-    for (let species of this.species) {
+    for (const species of this.species) {
       sum += species.getAvgAdjustedScore();
     }
     return sum;
@@ -231,20 +262,20 @@ export class NEATPopulation extends Population {
    * 5. Overwrite old population
    * @private
    */
-  private reproduce(selection: Selection): void {
+  private reproduce(selection: Selection): Network[] {
     if (this.species.length === 0) {
       throw new RangeError("Species length should never be 0!");
     }
 
-    let averageSum = this.sumOfAvgAdjustedFitnessScores();
-    let newPopulation: Network[] = [];
-    for (let species of this.species) {
+    const averageSum = this.sumOfAvgAdjustedFitnessScores();
+    const newPopulation: Network[] = [];
+    for (const species of this.species) {
       // copy the champion
       if (species.size() >= 5) newPopulation.push(species.bestNetwork);
 
       // calculate the number of children from this species
-      let avgAdjustedScore = species.getAvgAdjustedScore();
-      let numChildren: number = Math.floor((avgAdjustedScore / averageSum) * this.populationSize - 1);
+      const avgAdjustedScore = species.getAvgAdjustedScore();
+      const numChildren: number = Math.floor((avgAdjustedScore / averageSum) * this.populationSize - 1);
       // breed new children and add them to the new population
       for (let i = 0; i < numChildren; i++) {
         newPopulation.push(species.breed(selection));
@@ -254,8 +285,8 @@ export class NEATPopulation extends Population {
     while (newPopulation.length < this.populationSize) {
       newPopulation.push(this.species[0].breed(selection));
     }
-    // overwrite the old population with the new one
-    this.networks = newPopulation;
+    // reset species
     this.species = [];
+    return newPopulation;
   }
 }

@@ -67,7 +67,7 @@ class PowerSelection extends Selection {
    * Constructs a power selection.
    * @param power Probability of picking better networks.
    */
-  constructor(power = 4) {
+  constructor(power: number = 4) {
     super();
     this.power = power;
   }
@@ -103,7 +103,7 @@ class TournamentSelection extends Selection {
    * @param size the size of a tournament
    * @param probability Selects the best individual (when probability = 1).
    */
-  constructor(size = 5, probability = 0.5) {
+  constructor(size: number = 5, probability: number = 0.5) {
     super();
     this.size = size;
     this.probability = probability;

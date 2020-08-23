@@ -21,10 +21,10 @@ export class Species {
    * @private
    */
   public score: number;
-  highScore: number;
+  public highScore: number;
 
-  stagnation: number;
-  bestNetwork: Network;
+  public stagnation: number;
+  public bestNetwork: Network;
   private avgScore: number;
 
   constructor(representative: Network) {
@@ -39,7 +39,13 @@ export class Species {
     this.bestNetwork = representative.deepCopy();
   }
 
-  isCompatible(network: Network) {
+  /**
+   * Returns whether a genome is compatible with the species or not
+   *
+   * @param {Network} network An array of genomes to determine compatibility with (currently assumes two)
+   * @return {boolean} Whether a genome is compatible with the species
+   */
+  public isCompatible(network: Network): boolean {
     return (
       network.distance(this.representative, NEATPopulation.c1, NEATPopulation.c2, NEATPopulation.c3) <
       NEATPopulation.distanceThreshold
@@ -59,7 +65,7 @@ export class Species {
    */
   public updateScore(representativeIsBest: boolean = true): void {
     this.fitnessSharing();
-    this.sumScores();
+    this.score = this.sumScores();
 
     // Get the score of the best member
     let max: number = -Infinity;
@@ -85,13 +91,22 @@ export class Species {
     }
   }
 
-  sumScores(): void {
+  /**
+   * Add all network scores up and return
+   */
+  public sumScores(): number {
+    let score = 0; // reset score
     this.members.forEach((network) => {
-      if (network.score) this.score += network.score;
+      // add score up
+      if (network.score) score += network.score;
       else throw new ReferenceError("Network needs score for fitness evaluation!");
     });
+    return score;
   }
 
+  /**
+   * Add all adjusted network scores up and return.
+   */
   public getSumAdjustedScores(): number {
     let sum: number = 0;
     this.members.forEach((network) => {
@@ -100,12 +115,12 @@ export class Species {
     });
     return sum;
   }
+
+  /**
+   * Add all adjusted network scores up and divide by the member size.
+   */
   public getAvgAdjustedScore(): number {
     return this.getSumAdjustedScores() / this.members.size;
-  }
-
-  setAverage(): void {
-    this.avgScore = this.score / this.members.size;
   }
 
   /**
@@ -124,7 +139,7 @@ export class Species {
    * @param representativeIsBest is representative always the best member?
    */
   public cull(percentage: number = 0.5, representativeIsBest: boolean = true): void {
-    const arr: Network[] = this.sortedNetworksArray(); // descending
+    const arr: Network[] = this.sortedMembersArray(); // descending
 
     const amount: number = Math.floor(percentage * this.members.size);
     for (let i: number = amount; i < arr.length; i++) {
@@ -138,7 +153,7 @@ export class Species {
    * Create offspring
    */
   public breed(selection: Selection): Network {
-    let sortedMembers = this.sortedNetworksArray();
+    const sortedMembers = this.sortedMembersArray();
     return Network.crossover(selection.select(sortedMembers), selection.select(sortedMembers));
   }
 
@@ -150,13 +165,16 @@ export class Species {
   }
 
   /**
-   * to string
+   * Returning a string representation of this species.
    */
-  public toString(): String {
+  public toString(): string {
     return "Species={Members: " + this.members.size + "; Score: " + this.score + "}";
   }
 
-  public sortedNetworksArray(): Network[] {
+  /**
+   * Returns a sorted array representation of the members field
+   */
+  public sortedMembersArray(): Network[] {
     return Array.from(this.members).sort((a: Network, b: Network) => {
       if (a.score && b.score) return b.score - a.score;
       else if (a.score) return -1;
@@ -165,7 +183,10 @@ export class Species {
     });
   }
 
-  fitnessSharing(): void {
+  /**
+   * Dividing the fitness value of each individual by the size of the species and save the adjusted fitness.
+   */
+  public fitnessSharing(): void {
     this.members.forEach((network) => {
       if (network.score) network.adjustedFitness = network.score / this.members.size;
       else throw new ReferenceError("Network needs score for fitness sharing!");

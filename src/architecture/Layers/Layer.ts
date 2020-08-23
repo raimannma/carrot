@@ -54,7 +54,7 @@ export abstract class Layer {
     from: Layer | Set<Node> | Node[],
     to: Layer | Set<Node> | Node[],
     connectionType: ConnectionType = ConnectionType.ALL_TO_ALL,
-    weight = 1
+    weight: number = 1
   ): Connection[] {
     if (connectionType === ConnectionType.NO_CONNECTION) {
       throw new ReferenceError("Cannot connect with 'NO_CONNECTION' connection type");

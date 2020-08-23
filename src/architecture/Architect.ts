@@ -70,7 +70,7 @@ export class Architect {
     const inputSize: number = this.layers[0].layer.nodes.length;
     const outputSize: number = this.layers[this.layers.length - 1].layer.nodes.length;
 
-    const network: Network = new Network(inputSize, outputSize);
+    const network: Network = new Network(inputSize, outputSize, true);
     network.nodes = [];
     network.connections.clear();
 

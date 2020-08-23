@@ -240,7 +240,7 @@ export class Node {
    * @param weight Initial connection(s) [weight](https://en.wikipedia.org/wiki/Synaptic_weight)
    * @param twoSided If `true` connect nodes to each other
    */
-  public connect(target: Node, weight = 1, twoSided = false): Connection {
+  public connect(target: Node, weight: number = 1, twoSided: boolean = false): Connection {
     if (target === this) {
       // self connection
       this.selfConnection.weight = weight;
@@ -267,7 +267,7 @@ export class Node {
    * @param node Node(s) to remove connection(s) to
    * @param twoSided=false If `true` disconnects nodes from each other (i.e. both sides)
    */
-  public disconnect(node: Node, twoSided = false): Connection {
+  public disconnect(node: Node, twoSided: boolean = false): Connection {
     if (node === this) {
       // self connection
       this.selfConnection.weight = 0; // set weight to 0
@@ -392,7 +392,7 @@ export class Node {
    *
    * @returns A neuron's ['Squashed'](https://medium.com/the-theory-of-everything/understanding-activation-functions-in-neural-networks-9491262884e0) output value
    */
-  public activate(input?: number, trace = true): number {
+  public activate(input?: number, trace: boolean = true): number {
     if (input !== undefined) {
       return (this.activation = input);
     } else if (this.isInputNode()) {

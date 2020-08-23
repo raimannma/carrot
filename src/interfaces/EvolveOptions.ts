@@ -8,22 +8,6 @@ import { TrainOptions } from "./TrainOptions";
  */
 export class EvolveOptions {
   /**
-   * Maximum amount of episodes without improvement before removing a species
-   */
-  public maxStagnation: number;
-  /**
-   * How big could the distance be between a network and the represent of a species?
-   */
-  public speciesDistanceThreshold = 4;
-  public c1 = 1;
-  public c2 = 1;
-  public c3 = 1;
-  public survivors = 0.8;
-  /**
-   * Specify the amount of threads to use.
-   */
-  public threads: number;
-  /**
    * The input size of the network.
    */
   public input: number;
@@ -55,7 +39,7 @@ export class EvolveOptions {
   /**
    * A template network to create the population from.
    */
-  public template: Network;
+  public template?: Network;
   /**
    * Sets allowed [mutation methods](Mutation) for evolution, a random mutation method will be chosen from the array when mutation occurs. Optional, but default methods are non-recurrent.
    */
@@ -172,13 +156,10 @@ export class EvolveOptions {
     this.loss = MSELoss;
     this.mutations = FEEDFORWARD_MUTATIONS;
     this.activations = Object.values(ALL_ACTIVATIONS);
-    this.template = new Network(this.input, this.output);
     this.maxNodes = Infinity;
     this.maxConnections = Infinity;
     this.maxGates = Infinity;
-    this.threads = 4;
     this.iterations = 1000;
     this.error = 0.05;
-    this.maxStagnation = 3;
   }
 }

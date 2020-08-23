@@ -38,9 +38,9 @@ export class Network {
    * The score of this network for evolution.
    */
   public score: number | undefined;
-  adjustedFitness: number;
+  public adjustedFitness: number;
 
-  constructor(inputSize: number, outputSize: number) {
+  constructor(inputSize: number, outputSize: number, startsEmpty: boolean = false) {
     this.inputSize = inputSize;
     this.outputSize = outputSize;
 
@@ -57,13 +57,14 @@ export class Network {
     for (let i = 0; i < outputSize; i++) {
       this.nodes.push(new Node(NodeType.OUTPUT));
     }
-
-    // Connect input and output nodes
-    for (let i = 0; i < this.inputSize; i++) {
-      for (let j: number = this.inputSize; j < this.outputSize + this.inputSize; j++) {
-        // https://stats.stackexchange.com/a/248040/147931
-        const weight: number = (Math.random() - 0.5) * this.inputSize * Math.sqrt(2 / this.inputSize);
-        this.connect(this.nodes[i], this.nodes[j], weight);
+    if (!startsEmpty) {
+      // Connect input and output nodes
+      for (let i = 0; i < this.inputSize; i++) {
+        for (let j: number = this.inputSize; j < this.outputSize + this.inputSize; j++) {
+          // https://stats.stackexchange.com/a/248040/147931
+          const weight: number = (Math.random() - 0.5) * this.inputSize * Math.sqrt(2 / this.inputSize);
+          this.connect(this.nodes[i], this.nodes[j], weight);
+        }
       }
     }
   }
@@ -116,7 +117,7 @@ export class Network {
     }
 
     // Initialise offspring
-    const offspring: Network = new Network(network1.inputSize, network1.outputSize);
+    const offspring: Network = new Network(network1.inputSize, network1.outputSize, true);
     offspring.connections.clear(); // clear
     offspring.nodes = []; // clear
 
