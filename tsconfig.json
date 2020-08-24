@@ -5,7 +5,7 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "Node",
-    "declaration": false,
+    "declaration": true,
     "lib": ["es6"],
     "allowJs": false,
     "strict": true,
