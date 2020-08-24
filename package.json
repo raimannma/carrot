@@ -19,13 +19,14 @@
     "deploy:src": "tsc && npm run build_node_dist_dev && npm run build_node_dist_prod && npm run build_web_dist_dev && npm run build_web_dist_prod",
     "deploy:docs": "typedoc --options typedoc.json",
     "test": "mocha --recursive build/test/",
-    "check": "npm run check:src && npm run check:test && npm run lint",
+    "check": "npm run check:src && npm run check:test && npm run lint:check",
     "check:src": "prettier --check \"./src/**/*.ts\"",
     "check:test": "prettier --check \"./test/**/*.ts\"",
     "fix": "prettier --write .",
-    "lint": "tslint -c ./tslint.json 'src/**/*.ts' --fix",
+    "lint:check": "tslint -c ./tslint.json 'src/**/*.ts'",
+    "lint:fix": "tslint -c ./tslint.json 'src/**/*.ts' --fix",
     "pretest": "tsc",
-    "posttest": "npm run check && tslint -c ./tslint.json 'src/**/*.ts'"
+    "posttest": "npm run check"
   },
   "husky": {
     "hooks": {

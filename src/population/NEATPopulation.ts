@@ -67,6 +67,9 @@ export class NEATPopulation extends Population {
     } else {
       // increase stagnation counter
       this.stagnation++;
+      if (this.stagnation > NEATPopulation.populationStagnationLimit) {
+        this.killStalePopulation();
+      }
     }
 
     // remove a percentage of networks from each species
@@ -288,5 +291,14 @@ export class NEATPopulation extends Population {
     // reset species
     this.species = [];
     return newPopulation;
+  }
+
+  /**
+   * If the population stagnates kill all, but the 2 best species
+   * @private
+   */
+  private killStalePopulation(): void {
+    if (this.species.length <= 2) return;
+    else this.species = this.species.slice(0, 2 - this.species.length);
   }
 }
