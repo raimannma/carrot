@@ -1,3 +1,4 @@
+export * from "activations";
 export * from "./src/utils/Utils";
 export * from "./src/population/Population";
 export * from "./src/population/InstinctPopulation";
