@@ -1,12 +1,25 @@
-import { sum } from "../..";
+import { Connection } from "../Connection";
 import { ConstantNode } from "./ConstantNode";
+import { randDouble, sum } from "../../utils/Utils";
+import { DropoutNodeJSON } from "../../interfaces/NodeJSON";
 
 /**
- * Activation node
+ * Dropout node
  */
-export class ActivationNode extends ConstantNode {
-  constructor() {
+export class DropoutNode extends ConstantNode {
+  /**
+   * Dropout probability
+   */
+  private probability: number;
+  /**
+   * Is dropped out at last activation?
+   */
+  private droppedOut: boolean;
+
+  constructor(probability: number) {
     super();
+    this.probability = probability;
+    this.droppedOut = false;
   }
 
   /**
@@ -19,20 +32,25 @@ export class ActivationNode extends ConstantNode {
    * @returns A neuron's output value
    */
   public activate(): number {
-    this.prevState = this.state;
-
-    const incomingStates: number[] = Array.from(this.incoming).map(
-      (conn) => conn.from.activation * conn.weight * conn.gain
-    );
-
-    if (incomingStates.length !== 1) {
-      throw new ReferenceError("Only 1 incoming connections is allowed!");
+    if (this.incoming.size !== 1) {
+      throw new RangeError("Dropout node should have exactly one incoming connection!");
     }
+    const incomingConnection: Connection = Array.from(this.incoming)[0];
 
-    this.state = incomingStates[0];
-
+    // https://stats.stackexchange.com/a/219240
+    if (randDouble(0, 1) < this.probability) {
+      // DROPOUT
+      this.droppedOut = true;
+      this.state = 0;
+    } else {
+      this.droppedOut = false;
+      this.state = incomingConnection.from.activation * incomingConnection.weight * incomingConnection.gain;
+      this.state *= 1 / (1 - this.probability);
+    }
     this.activation = this.squash(this.state, false) * this.mask;
-    this.derivativeState = this.squash(this.state, true);
+
+    // Adjust gain
+    this.gated.forEach((conn) => (conn.gain = this.activation));
 
     return this.activation;
   }
@@ -48,7 +66,7 @@ export class ActivationNode extends ConstantNode {
    * @param options More options for propagation
    */
   public propagate(
-    target: number,
+    target?: number,
     options: {
       /**
        * [Momentum](https://www.willamette.edu/~gorr/classes/cs449/momrate.html) adds a fraction of the previous weight update to the current one.
@@ -62,7 +80,7 @@ export class ActivationNode extends ConstantNode {
        * When set to false weights won't update, but when set to true after being false the last propagation will include the delta weights of the first "update:false" propagations too.
        */
       update?: boolean;
-    }
+    } = {}
   ): void {
     options.momentum = options.momentum ?? 0;
     options.rate = options.rate ?? 0.3;
@@ -71,22 +89,52 @@ export class ActivationNode extends ConstantNode {
     const connectionsStates: number[] = Array.from(this.outgoing).map(
       (conn) => conn.to.errorResponsibility * conn.weight * conn.gain
     );
-    this.errorResponsibility = this.errorProjected = sum(connectionsStates) * this.derivativeState;
+    this.errorResponsibility = this.errorProjected = sum(connectionsStates) / (1 - this.probability);
 
-    this.incoming.forEach((connection) => {
-      // calculate gradient
+    if (this.incoming.size !== 1) {
+      throw new RangeError("Dropout node should have exactly one incoming connection!");
+    }
+    const connection: Connection = Array.from(this.incoming)[0];
+
+    // calculate gradient
+    if (!this.droppedOut) {
       let gradient: number = this.errorProjected * connection.eligibility;
+
       connection.xTrace.forEach((value, key) => {
         gradient += key.errorResponsibility * value;
       });
 
-      connection.deltaWeightsTotal += (options.rate ?? 0.3) * gradient * this.mask;
       if (options.update) {
-        connection.deltaWeightsTotal += (options.momentum ?? 0) * connection.deltaWeightsPrevious;
+        connection.deltaWeightsTotal +=
+          options.rate * gradient * this.mask + options.momentum * connection.deltaWeightsPrevious;
         connection.weight += connection.deltaWeightsTotal;
         connection.deltaWeightsPrevious = connection.deltaWeightsTotal;
         connection.deltaWeightsTotal = 0;
       }
+    }
+  }
+
+  /**
+   * Create a constant node from json object.
+   *
+   * @param json the json object representing the node
+   *
+   * @returns the created node
+   */
+  public fromJSON(json: DropoutNodeJSON): DropoutNode {
+    super.fromJSON(json);
+    this.probability = json.probability;
+    return this;
+  }
+
+  /**
+   * Convert this node into a json object.
+   *
+   * @returns the json object representing this node
+   */
+  public toJSON(): DropoutNodeJSON {
+    return Object.assign(super.toJSON(), {
+      probability: this.probability,
     });
   }
 }

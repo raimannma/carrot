@@ -1,25 +1,32 @@
-import { BinaryStep } from "activations";
-import { ConnectionType, NodeType } from "../../..";
+import { ActivationType, Logistic } from "activations";
 import { Node } from "../../Node";
 import { Layer } from "../Layer";
+import { NodeType } from "../../../enums/NodeType";
+import { ConnectionType } from "../../../enums/ConnectionType";
 
 /**
- * Hopfield layer
+ * Dense layer
  */
-export class HopfieldLayer extends Layer {
-  constructor(outputSize: number) {
+export class DenseLayer extends Layer {
+  constructor(
+    outputSize: number,
+    options: {
+      /**
+       * The activation type for the output nodes of this layer.
+       */
+      activationType?: ActivationType;
+    } = {}
+  ) {
     super(outputSize);
 
+    const activation: ActivationType = options.activationType ?? Logistic;
+
     for (let i = 0; i < outputSize; i++) {
-      this.inputNodes.add(new Node(NodeType.HIDDEN));
-      this.outputNodes.add(new Node(NodeType.HIDDEN).setActivationType(BinaryStep));
+      this.inputNodes.add(new Node(NodeType.HIDDEN).setActivationType(activation));
     }
 
-    this.connections.push(...Layer.connect(this.inputNodes, this.outputNodes, ConnectionType.ALL_TO_ALL));
-    this.connections.push(...Layer.connect(this.outputNodes, this.inputNodes, ConnectionType.ALL_TO_ALL));
-
+    this.outputNodes = this.inputNodes;
     this.nodes.push(...Array.from(this.inputNodes));
-    this.nodes.push(...Array.from(this.outputNodes));
   }
 
   /**

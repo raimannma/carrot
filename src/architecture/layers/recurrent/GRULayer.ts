@@ -1,8 +1,10 @@
 import { ActivationType, Logistic, TANH } from "activations";
-import { ConnectionType, GatingType, NodeType } from "../../..";
 import { Connection } from "../../Connection";
 import { Node } from "../../Node";
 import { Layer } from "../Layer";
+import { NodeType } from "../../../enums/NodeType";
+import { ConnectionType } from "../../../enums/ConnectionType";
+import { GatingType } from "../../../enums/GatingType";
 
 /**
  * GRU layer

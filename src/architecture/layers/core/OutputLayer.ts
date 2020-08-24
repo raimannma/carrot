@@ -1,12 +1,13 @@
-import { ActivationType, Logistic } from "activations";
-import { ConnectionType, NodeType } from "../../..";
+import { ActivationType, Identitiy } from "activations";
 import { Node } from "../../Node";
 import { Layer } from "../Layer";
+import { NodeType } from "../../../enums/NodeType";
+import { ConnectionType } from "../../../enums/ConnectionType";
 
 /**
- * RNN layer
+ * Output layer
  */
-export class RNNLayer extends Layer {
+export class OutputLayer extends Layer {
   constructor(
     outputSize: number,
     options: {
@@ -18,15 +19,18 @@ export class RNNLayer extends Layer {
   ) {
     super(outputSize);
 
+    const activation: ActivationType = options.activation ?? Identitiy;
     for (let i = 0; i < outputSize; i++) {
-      this.inputNodes.add(new Node(NodeType.HIDDEN).setActivationType(options.activation ?? Logistic));
+      this.inputNodes.add(new Node(NodeType.OUTPUT).setActivationType(activation));
     }
-
-    this.outputNodes = this.inputNodes;
     this.nodes.push(...Array.from(this.inputNodes));
+  }
 
-    // Adding self connections
-    this.connections.push(...Layer.connect(this.nodes, this.nodes, ConnectionType.ONE_TO_ONE));
+  /**
+   * A outgoing connection is not allowed for an output layer!
+   */
+  public connect(): void {
+    throw new ReferenceError("Could not connect an OutputLayer!");
   }
 
   /**

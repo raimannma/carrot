@@ -1,5 +1,5 @@
-import { ConnectionType } from "../../..";
 import { Layer } from "../Layer";
+import { ConnectionType } from "../../../enums/ConnectionType";
 
 /**
  * Parent class for all pooling layers

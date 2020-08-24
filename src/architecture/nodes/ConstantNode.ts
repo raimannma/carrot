@@ -1,5 +1,6 @@
-import { NodeJSON, NodeType } from "../..";
 import { Node } from "../Node";
+import { NodeType } from "../../enums/NodeType";
+import { NodeJSON } from "../../interfaces/NodeJSON";
 
 /**
  * Constant node

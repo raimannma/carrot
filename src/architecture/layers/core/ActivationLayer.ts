@@ -1,29 +1,28 @@
 import { ActivationType, Logistic } from "activations";
-import { ConnectionType, NodeType } from "../../..";
-import { Node } from "../../Node";
+import { ActivationNode } from "../../nodes/ActivationNode";
 import { Layer } from "../Layer";
+import { ConnectionType } from "../../../enums/ConnectionType";
 
 /**
- * Dense layer
+ * Activation layer
  */
-export class DenseLayer extends Layer {
+export class ActivationLayer extends Layer {
   constructor(
     outputSize: number,
     options: {
       /**
        * The activation type for the output nodes of this layer.
        */
-      activationType?: ActivationType;
+      activation?: ActivationType;
     } = {}
   ) {
     super(outputSize);
 
-    const activation: ActivationType = options.activationType ?? Logistic;
+    const activation: ActivationType = options.activation ?? Logistic;
 
     for (let i = 0; i < outputSize; i++) {
-      this.inputNodes.add(new Node(NodeType.HIDDEN).setActivationType(activation));
+      this.inputNodes.add(new ActivationNode().setActivationType(activation));
     }
-
     this.outputNodes = this.inputNodes;
     this.nodes.push(...Array.from(this.inputNodes));
   }
@@ -31,10 +30,12 @@ export class DenseLayer extends Layer {
   /**
    * Checks if a given connection type is allowed on this layer.
    *
+   * @param type the type to check
+   *
    * @return Is this connection type allowed?
    */
-  public connectionTypeisAllowed(): boolean {
-    return true;
+  public connectionTypeisAllowed(type: ConnectionType): boolean {
+    return type === ConnectionType.ONE_TO_ONE;
   }
 
   /**
@@ -43,6 +44,6 @@ export class DenseLayer extends Layer {
    * @returns the default incoming connection
    */
   public getDefaultIncomingConnectionType(): ConnectionType {
-    return ConnectionType.ALL_TO_ALL;
+    return ConnectionType.ONE_TO_ONE;
   }
 }

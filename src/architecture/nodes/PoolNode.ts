@@ -1,7 +1,9 @@
-import { avg, maxValueIndex, minValueIndex, PoolNodeJSON, PoolNodeType, sum } from "../..";
 import { Connection } from "../Connection";
 import { Node } from "../Node";
 import { ConstantNode } from "./ConstantNode";
+import { avg, maxValueIndex, minValueIndex, sum } from "../../utils/Utils";
+import { PoolNodeType } from "../../enums/NodeType";
+import { PoolNodeJSON } from "../../interfaces/NodeJSON";
 
 /**
  * Pool node

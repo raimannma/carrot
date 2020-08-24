@@ -1,6 +1,7 @@
-import { ConnectionType, GatingType } from "../..";
 import { Connection } from "../Connection";
 import { Node } from "../Node";
+import { ConnectionType } from "../../enums/ConnectionType";
+import { GatingType } from "../../enums/GatingType";
 
 /**
  * Parent class for layers.
@@ -41,10 +42,10 @@ export abstract class Layer {
   }
 
   /**
-   * Connect two Layers or sets of Nodes.
+   * Connect two layers or sets of nodes.
    *
-   * @param from origin Nodes / Layer
-   * @param to destination Nodes / Layer
+   * @param from origin nodes / Layer
+   * @param to destination nodes / Layer
    * @param connectionType The type of connection
    * @param weight the initial weights for all new connections
    *

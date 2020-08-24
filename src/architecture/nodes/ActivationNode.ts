@@ -1,38 +1,12 @@
-import { avg, generateGaussian, sum } from "../..";
 import { ConstantNode } from "./ConstantNode";
+import { sum } from "../../utils/Utils";
 
 /**
- * Noise node
+ * Activation node
  */
-export class NoiseNode extends ConstantNode {
-  /**
-   * More options for applying noise
-   */
-  private readonly options: {
-    /**
-     * Mean value
-     */
-    mean?: number;
-    /**
-     * Standard deviation
-     */
-    deviation?: number;
-  };
-
-  constructor(
-    options: {
-      /**
-       * Mean value
-       */
-      mean?: number;
-      /**
-       * Standard deviation
-       */
-      deviation?: number;
-    } = {}
-  ) {
+export class ActivationNode extends ConstantNode {
+  constructor() {
     super();
-    this.options = options;
   }
 
   /**
@@ -51,7 +25,11 @@ export class NoiseNode extends ConstantNode {
       (conn) => conn.from.activation * conn.weight * conn.gain
     );
 
-    this.state = avg(incomingStates) + generateGaussian(this.options?.mean ?? 0, this.options?.deviation ?? 2);
+    if (incomingStates.length !== 1) {
+      throw new ReferenceError("Only 1 incoming connections is allowed!");
+    }
+
+    this.state = incomingStates[0];
 
     this.activation = this.squash(this.state, false) * this.mask;
     this.derivativeState = this.squash(this.state, true);
@@ -70,7 +48,7 @@ export class NoiseNode extends ConstantNode {
    * @param options More options for propagation
    */
   public propagate(
-    target?: number,
+    target: number,
     options: {
       /**
        * [Momentum](https://www.willamette.edu/~gorr/classes/cs449/momrate.html) adds a fraction of the previous weight update to the current one.
@@ -84,7 +62,7 @@ export class NoiseNode extends ConstantNode {
        * When set to false weights won't update, but when set to true after being false the last propagation will include the delta weights of the first "update:false" propagations too.
        */
       update?: boolean;
-    } = {}
+    }
   ): void {
     options.momentum = options.momentum ?? 0;
     options.rate = options.rate ?? 0.3;

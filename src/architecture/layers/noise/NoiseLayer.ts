@@ -1,11 +1,12 @@
 import { ActivationType, Identitiy } from "activations";
-import { ConnectionType, DropoutNode } from "../../..";
 import { Layer } from "../Layer";
+import { NoiseNode } from "../../nodes/NoiseNode";
+import { ConnectionType } from "../../../enums/ConnectionType";
 
 /**
- * Dropout layer
+ * Noise layer
  */
-export class DropoutLayer extends Layer {
+export class NoiseLayer extends Layer {
   constructor(
     outputSize: number,
     options: {
@@ -14,18 +15,21 @@ export class DropoutLayer extends Layer {
        */
       activation?: ActivationType;
       /**
-       * The dropout probability
+       * The mean value for gaussian noise
        */
-      probability?: number;
+      mean?: number;
+      /**
+       * The standard deviation for gaussian noise
+       */
+      deviation?: number;
     } = {}
   ) {
     super(outputSize);
 
     const activation: ActivationType = options.activation ?? Identitiy;
-    const probability: number = options.probability ?? 0.1;
 
     for (let i = 0; i < outputSize; i++) {
-      this.inputNodes.add(new DropoutNode(probability).setActivationType(activation));
+      this.inputNodes.add(new NoiseNode(options).setActivationType(activation));
     }
 
     this.outputNodes = this.inputNodes;

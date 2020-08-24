@@ -1,12 +1,13 @@
 import { ActivationType, Logistic } from "activations";
-import { ConnectionType } from "../../..";
-import { ActivationNode } from "../../Nodes/ActivationNode";
+import { Node } from "../../Node";
 import { Layer } from "../Layer";
+import { NodeType } from "../../../enums/NodeType";
+import { ConnectionType } from "../../../enums/ConnectionType";
 
 /**
- * Activation layer
+ * RNN layer
  */
-export class ActivationLayer extends Layer {
+export class RNNLayer extends Layer {
   constructor(
     outputSize: number,
     options: {
@@ -18,24 +19,24 @@ export class ActivationLayer extends Layer {
   ) {
     super(outputSize);
 
-    const activation: ActivationType = options.activation ?? Logistic;
-
     for (let i = 0; i < outputSize; i++) {
-      this.inputNodes.add(new ActivationNode().setActivationType(activation));
+      this.inputNodes.add(new Node(NodeType.HIDDEN).setActivationType(options.activation ?? Logistic));
     }
+
     this.outputNodes = this.inputNodes;
     this.nodes.push(...Array.from(this.inputNodes));
+
+    // Adding self connections
+    this.connections.push(...Layer.connect(this.nodes, this.nodes, ConnectionType.ONE_TO_ONE));
   }
 
   /**
    * Checks if a given connection type is allowed on this layer.
    *
-   * @param type the type to check
-   *
    * @return Is this connection type allowed?
    */
-  public connectionTypeisAllowed(type: ConnectionType): boolean {
-    return type === ConnectionType.ONE_TO_ONE;
+  public connectionTypeisAllowed(): boolean {
+    return true;
   }
 
   /**
@@ -44,6 +45,6 @@ export class ActivationLayer extends Layer {
    * @returns the default incoming connection
    */
   public getDefaultIncomingConnectionType(): ConnectionType {
-    return ConnectionType.ONE_TO_ONE;
+    return ConnectionType.ALL_TO_ALL;
   }
 }

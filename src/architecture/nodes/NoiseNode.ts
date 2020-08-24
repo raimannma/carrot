@@ -1,24 +1,38 @@
-import { DropoutNodeJSON, randDouble, sum } from "../..";
-import { Connection } from "../Connection";
 import { ConstantNode } from "./ConstantNode";
+import { avg, generateGaussian, sum } from "../../utils/Utils";
 
 /**
- * Dropout node
+ * Noise node
  */
-export class DropoutNode extends ConstantNode {
+export class NoiseNode extends ConstantNode {
   /**
-   * Dropout probability
+   * More options for applying noise
    */
-  private probability: number;
-  /**
-   * Is dropped out at last activation?
-   */
-  private droppedOut: boolean;
+  private readonly options: {
+    /**
+     * Mean value
+     */
+    mean?: number;
+    /**
+     * Standard deviation
+     */
+    deviation?: number;
+  };
 
-  constructor(probability: number) {
+  constructor(
+    options: {
+      /**
+       * Mean value
+       */
+      mean?: number;
+      /**
+       * Standard deviation
+       */
+      deviation?: number;
+    } = {}
+  ) {
     super();
-    this.probability = probability;
-    this.droppedOut = false;
+    this.options = options;
   }
 
   /**
@@ -31,25 +45,16 @@ export class DropoutNode extends ConstantNode {
    * @returns A neuron's output value
    */
   public activate(): number {
-    if (this.incoming.size !== 1) {
-      throw new RangeError("Dropout node should have exactly one incoming connection!");
-    }
-    const incomingConnection: Connection = Array.from(this.incoming)[0];
+    this.prevState = this.state;
 
-    // https://stats.stackexchange.com/a/219240
-    if (randDouble(0, 1) < this.probability) {
-      // DROPOUT
-      this.droppedOut = true;
-      this.state = 0;
-    } else {
-      this.droppedOut = false;
-      this.state = incomingConnection.from.activation * incomingConnection.weight * incomingConnection.gain;
-      this.state *= 1 / (1 - this.probability);
-    }
+    const incomingStates: number[] = Array.from(this.incoming).map(
+      (conn) => conn.from.activation * conn.weight * conn.gain
+    );
+
+    this.state = avg(incomingStates) + generateGaussian(this.options?.mean ?? 0, this.options?.deviation ?? 2);
+
     this.activation = this.squash(this.state, false) * this.mask;
-
-    // Adjust gain
-    this.gated.forEach((conn) => (conn.gain = this.activation));
+    this.derivativeState = this.squash(this.state, true);
 
     return this.activation;
   }
@@ -88,52 +93,22 @@ export class DropoutNode extends ConstantNode {
     const connectionsStates: number[] = Array.from(this.outgoing).map(
       (conn) => conn.to.errorResponsibility * conn.weight * conn.gain
     );
-    this.errorResponsibility = this.errorProjected = sum(connectionsStates) / (1 - this.probability);
+    this.errorResponsibility = this.errorProjected = sum(connectionsStates) * this.derivativeState;
 
-    if (this.incoming.size !== 1) {
-      throw new RangeError("Dropout node should have exactly one incoming connection!");
-    }
-    const connection: Connection = Array.from(this.incoming)[0];
-
-    // calculate gradient
-    if (!this.droppedOut) {
+    this.incoming.forEach((connection) => {
+      // calculate gradient
       let gradient: number = this.errorProjected * connection.eligibility;
-
       connection.xTrace.forEach((value, key) => {
         gradient += key.errorResponsibility * value;
       });
 
+      connection.deltaWeightsTotal += (options.rate ?? 0.3) * gradient * this.mask;
       if (options.update) {
-        connection.deltaWeightsTotal +=
-          options.rate * gradient * this.mask + options.momentum * connection.deltaWeightsPrevious;
+        connection.deltaWeightsTotal += (options.momentum ?? 0) * connection.deltaWeightsPrevious;
         connection.weight += connection.deltaWeightsTotal;
         connection.deltaWeightsPrevious = connection.deltaWeightsTotal;
         connection.deltaWeightsTotal = 0;
       }
-    }
-  }
-
-  /**
-   * Create a constant node from json object.
-   *
-   * @param json the json object representing the node
-   *
-   * @returns the created node
-   */
-  public fromJSON(json: DropoutNodeJSON): DropoutNode {
-    super.fromJSON(json);
-    this.probability = json.probability;
-    return this;
-  }
-
-  /**
-   * Convert this node into a json object.
-   *
-   * @returns the json object representing this node
-   */
-  public toJSON(): DropoutNodeJSON {
-    return Object.assign(super.toJSON(), {
-      probability: this.probability,
     });
   }
 }

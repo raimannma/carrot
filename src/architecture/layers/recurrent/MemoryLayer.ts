@@ -1,7 +1,8 @@
 import { ActivationType, Identitiy, Logistic } from "activations";
-import { ConnectionType, NodeType } from "../../..";
 import { Node } from "../../Node";
 import { Layer } from "../Layer";
+import { NodeType } from "../../../enums/NodeType";
+import { ConnectionType } from "../../../enums/ConnectionType";
 
 /**
  * Memory layer

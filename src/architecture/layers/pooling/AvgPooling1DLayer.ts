@@ -1,6 +1,7 @@
 import { ActivationType, Identitiy } from "activations";
-import { PoolNode, PoolNodeType } from "../../..";
 import { PoolingLayer } from "./PoolingLayer";
+import { PoolNode } from "../../nodes/PoolNode";
+import { PoolNodeType } from "../../../enums/NodeType";
 
 /**
  * Average pooling layer 1D
